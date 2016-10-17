@@ -1,4 +1,6 @@
 from random import randint
+
+"""
 def make_student_dictionary(c,s):
 	student_dictionary = {}
 	for student in range(0,s):
@@ -9,17 +11,6 @@ def make_student_dictionary(c,s):
 				student_dictionary[student].append(new_class)
 	return student_dictionary
 
-def make_conflict_matrix(student_dictionary,c):
-	conflict_dict = {}
-	for i in range(0,c):
-		for j in range(0,c):
-			conflict_dict[(i,j)] = 0
-			for student in student_dictionary:
-				if i in  student_dictionary[student] and j in  student_dictionary[student]:
-					conflict_dict[(i,j)] += 1
-	return conflict_dict
-			
-
 
 def make_teachers(c):
 	teachers={}
@@ -29,6 +20,18 @@ def make_teachers(c):
 		n+=1
 	return teachers
 
+"""
+	
+def make_conflict_matrix(student_dictionary,c):
+	conflict_dict = {}
+	for i in range(0,c):
+		for j in range(0,c):
+			conflict_dict[(i,j)] = 0
+			for student in student_dictionary:
+				if i in  student_dictionary[student] and j in  student_dictionary[student]:
+					conflict_dict[(i,j)] += 1
+	return conflict_dict
+	
 
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
@@ -70,7 +73,7 @@ def make_schedule(class_times,rooms,students,teachers,con_mat,c):
 	print "Total Conflict:",total		
 c = 100
  	
-students = make_student_dictionary(c,1000)
+#students = make_student_dictionary(c,1000)
 
 con_mat = make_conflict_matrix(students,c)
 
