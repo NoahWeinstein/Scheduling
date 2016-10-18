@@ -18,8 +18,7 @@ def parse_constraints(constraints_name):
         class_id = int(line[0])
         teacher_id = int(line[1])
         teacher_to_classes[teacher_id].append(class_id)
-    print rooms,"\n",teacher_to_classes
-    return
+    return (rooms, num_classes, teacher_to_classes)
 
 #for testing
-parse_constraints("demo_constraints.txt")
+print parse_constraints("demo_constraints.txt")
