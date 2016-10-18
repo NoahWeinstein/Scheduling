@@ -9,7 +9,16 @@ def parse_constraints(constraints_name):
     for i in range(0,num_rooms):
         rooms[i+1] = int(constraints_file.readline().split()[-1])
 
-    print rooms
+    num_classes = int(constraints_file.readline().split()[-1])
+    
+    num_teachers = int(constraints_file.readline().split()[-1])
+    teacher_to_classes = {x:[] for x in range(1,num_teachers+1)}
+    for i in range(0,num_classes):
+        line = constraints_file.readline().split()
+        class_id = int(line[0])
+        teacher_id = int(line[1])
+        teacher_to_classes[teacher_id].append(class_id)
+    print rooms,"\n",teacher_to_classes
     return
 
 #for testing
