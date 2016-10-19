@@ -14,9 +14,13 @@ parser.add_argument('output', type=str, nargs = 1,
 args = parser.parse_args()
 
 constraints = parse_inputs.parse_constraints(args.constraints[0])
+rooms = constraints[0]
+courses = constraints[1]
+teachers = constraints[2]
+times = constraints[3]
 
-student_prefs = parse_inputs.parse_prefs(args.preferences[0])
-
+studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+print rooms, courses, teachers, times, studentPrefs
 
 """
 def make_student_dictionary(c,s):
@@ -89,11 +93,16 @@ def make_schedule(class_times,rooms,students,teachers,con_mat,c):
 	for key in class_times:
 		total += class_times[key][0]
 	print "Total Conflict:",total		
+
+def courseAssignment(courses, rooms, times, teachers, studentPrefs):
+    return
+
 c = 100
  	
+
 #students = make_student_dictionary(c,1000)
 
-con_mat = make_conflict_matrix(student_prefs,c)
+con_mat = make_conflict_matrix(studentPrefs,c)
 
 #teachers = make_teachers(c)
 

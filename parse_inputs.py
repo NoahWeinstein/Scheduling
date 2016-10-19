@@ -2,6 +2,7 @@ def parse_constraints(constraints_name):
     with open(constraints_name,'r') as constraints_file:
         #last number of first line is number of time slots
         num_times = int(constraints_file.readline().split()[-1])
+        times = {x:[] for x in range(1,num_times+1)}
 
         #set up rooms array
         num_rooms = int(constraints_file.readline().split()[-1])
@@ -13,16 +14,17 @@ def parse_constraints(constraints_name):
             rooms[room_id] = room_size
 
         num_classes = int(constraints_file.readline().split()[-1])
-        
+        courses = [0] * num_classes
+
         num_teachers = int(constraints_file.readline().split()[-1])
         teacher_to_classes = {x:[] for x in range(1,num_teachers+1)}
         for i in range(0,num_classes):
             line = constraints_file.readline().split()
             class_id = int(line[0])
+            courses[i] = class_id
             teacher_id = int(line[1])
             teacher_to_classes[teacher_id].append(class_id)
-        return (rooms, num_classes, teacher_to_classes)
-
+        return (rooms, courses, teacher_to_classes, times)
 
 
 def parse_prefs(prefs_name):
