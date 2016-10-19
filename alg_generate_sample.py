@@ -1,4 +1,17 @@
 from random import randint
+import argparse
+
+from . import parse_inputs
+
+parser = argparse.ArgumentParser(description='Create a schedule')
+parser.add_argument('constraints', type=str, nargs=1,
+                    help='Name of constraints file.')
+parser.add_argument('preferences', type=str, nargs=1,
+                    help='Name of student preferences file.')
+parser.add_argument('output', type=str, nargs = 1,
+                    help='Name of output file.')
+
+args = parser.parse_args()
 
 """
 def make_student_dictionary(c,s):
