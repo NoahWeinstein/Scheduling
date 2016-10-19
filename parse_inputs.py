@@ -38,6 +38,3 @@ def parse_prefs(prefs_name):
 
         return student_prefs
 
-#for testing
-print parse_constraints("demo_constraints.txt")
-print parse_prefs("demo_studentprefs.txt")
