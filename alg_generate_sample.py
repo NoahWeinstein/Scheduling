@@ -1,7 +1,7 @@
 from random import randint
 import argparse
 
-from . import parse_inputs
+import parse_inputs
 
 parser = argparse.ArgumentParser(description='Create a schedule')
 parser.add_argument('constraints', type=str, nargs=1,
@@ -12,6 +12,11 @@ parser.add_argument('output', type=str, nargs = 1,
                     help='Name of output file.')
 
 args = parser.parse_args()
+
+constraints = parse_inputs.parse_constraints(args.constraints[0])
+
+student_prefs = parse_inputs.parse_prefs(args.preferences[0])
+
 
 """
 def make_student_dictionary(c,s):
@@ -88,13 +93,13 @@ c = 100
  	
 #students = make_student_dictionary(c,1000)
 
-con_mat = make_conflict_matrix(students,c)
+con_mat = make_conflict_matrix(student_prefs,c)
 
-teachers = make_teachers(c)
+#teachers = make_teachers(c)
 
 
 rooms = [20, 30, 30, 40]
 
 class_times = {1:[0],2:[0],3:[0],4:[0],5:[0],6:[0]}
 
-make_schedule(class_times,rooms,students,teachers,con_mat,c)
+#make_schedule(class_times,rooms,students,teachers,con_mat,c)
