@@ -94,7 +94,21 @@ def make_schedule(class_times,rooms,students,teachers,con_mat,c):
 		total += class_times[key][0]
 	print "Total Conflict:",total		
 
-def courseAssignment(courses, rooms, times, teachers, studentPrefs):
+def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
+    conflicts = conflictMatrix(studentPrefs, teachers)
+    popularities = popularityList(courses, conflicts, teachers)
+    for course in popularities:
+        bestSlot = None
+        bestConflictNum = float('inf')
+        for time in courseTimesDict:
+            tempConflictNum = 0
+            for conflictingCourse in courseTimeDict[time]:
+                tempConflictNum += conflicts[(conflictingCourse, course)]
+            if (tempConflicNum < bestConflictNum and len(courseTimesDict) < len(rooms)):
+                bestSlot = time
+                bestConflictNum = tempConflictNum
+        if bestSlot != None:
+            courseTimeDict[bestSlot].append(course)
     return
 
 c = 100
