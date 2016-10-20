@@ -42,8 +42,7 @@ def make_teachers(c):
 		n+=1
 	return teachers
 
-"""
-	
+#this running time is courses^2 * students new function is better and modeled after pseudocode
 def make_conflict_matrix(student_dictionary,c):
 	conflict_dict = {}
 	for i in range(0,c):
@@ -53,7 +52,30 @@ def make_conflict_matrix(student_dictionary,c):
 				if i in  student_dictionary[student] and j in  student_dictionary[student]:
 					conflict_dict[(i,j)] += 1
 	return conflict_dict
-	
+
+"""
+
+
+def make_conflict_matrix1(student_dictionary, teacher_dictionary, courses_dictionary):
+	conflict_dict = {}
+	#initializes conflict_dict:
+	for course_first in courses_dictionary:
+                for course_second in courses_dictionary:
+                        conflict_dict[(course_first,course_second)] = 0
+                        
+	for student in student_dictionary:
+                cur_pref_list = student_dictionary[student]
+                for i in range (0, len(cur_pref_list)):
+                        for j in range (i, len(cur_pref_list)):
+                                conflict_dict[(cur_pref_list[i],cur_pref_list[j])] += 1
+                                conflict_dict[(cur_pref_list[j],cur_pref_list[i])] += 1
+        
+        for teacher in teacher_dictionary:
+                conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = None
+                conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = None
+
+        return conflict_dict
+
 
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
@@ -120,6 +142,7 @@ c = 100
 #students = make_student_dictionary(c,1000)
 
 con_mat = make_conflict_matrix(studentPrefs,c)
+
 
 #teachers = make_teachers(c)
 
