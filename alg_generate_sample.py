@@ -109,6 +109,9 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
                 bestConflictNum = tempConflictNum
         if bestSlot != None:
             courseTimeDict[bestSlot].append(course)
+    roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
+    studentsInCourse = fillStudents(studentPrefs, courseTimesDict, roomDict)
+    #need to parse this
     return
 
 c = 100
