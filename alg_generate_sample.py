@@ -136,12 +136,10 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
     #need to parse this
     return
 
-c = 100
- 	
-
+#c = 100
 #students = make_student_dictionary(c,1000)
 
-con_mat = make_conflict_matrix(studentPrefs,c)
+con_mat = make_conflict_matrix(studentPrefs,teachers,courses)
 
 
 #teachers = make_teachers(c)
