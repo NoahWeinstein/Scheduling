@@ -55,8 +55,8 @@ def make_conflict_matrix(student_dictionary,c):
 
 """
 
-
-def make_conflict_matrix1(student_dictionary, teacher_dictionary, courses_dictionary):
+#some restructuring of other functions to make them work with the new conflict matrix might need to happen
+def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_dictionary):
 	conflict_dict = {}
 	#initializes conflict_dict:
 	for course_first in courses_dictionary:
@@ -90,18 +90,21 @@ def assign_rooms(class_times_dict, rooms, con_mat):
     return class_to_room
 
 
-def make_schedule(class_times,rooms,students,teachers,con_mat,c):
+def make_schedule(class_times,rooms,students,teachers,con_mat,c, courses_dictionary):   
+                #not sure if we need all of these inputs... especially c
+        #this section is the popularityList from the write-up
 	popularity = []	
-	for i in range(0,c):
-		popularity.append((i,con_mat[(i,i)]))
+	for course in courses_dictionary:       #this structure is modeled after the con_mat lake built
+		popularity.append((course,con_mat[(course,course)]))
 	popularity.sort(key= lambda student: student[1])
 	print popularity
+	
 	for key in class_times:
 		class_times[key].append(popularity.pop())
 	print class_times
 	while len(popularity) != 0:
 		current = popularity.pop()
-		min_conflict = (55,1000000)
+		min_conflict = (55,1000000)     #what are these numbers based on?? -lake
 		for time in class_times:
 			conflict = 0
 			for item in class_times[time][1:]:
@@ -116,6 +119,8 @@ def make_schedule(class_times,rooms,students,teachers,con_mat,c):
 		total += class_times[key][0]
 	print "Total Conflict:",total		
 
+# this function is almost identical with the pseudocode, but doesn't mesh super well with the rest of the functions
+		#for example, we don't have a "fillStudents" function, as the last line would have you suggest.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
     conflicts = conflictMatrix(studentPrefs, teachers)
     popularities = popularityList(courses, conflicts, teachers)
