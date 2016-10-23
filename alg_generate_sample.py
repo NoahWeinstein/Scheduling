@@ -105,7 +105,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
     courseDict = { course:{
         'room': roomDict[course],
         'roomSize': rooms[roomDict[course]],
-        'popularity': popularities[course],
+        'popularity': conflicts[course, course],
         'teacher': inv_teachers[course],
         'time': courseTimesDict[course]
         } for course in courses}
