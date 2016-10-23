@@ -87,4 +87,4 @@ times = {1:[], 2:[]}
 
 rooms = {1:2, 2:8}
 
-courseListnew = courseAssignment(courseList, rooms, times, teachers, students)
+courseListNew = courseAssignment(courseList, rooms, times, teachers, students)
