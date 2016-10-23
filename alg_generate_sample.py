@@ -14,9 +14,17 @@ parser.add_argument('output', type=str, nargs = 1,
 args = parser.parse_args()
 
 constraints = parse_inputs.parse_constraints(args.constraints[0])
+# rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
+
+# courses is a list of class ids
 courses = constraints[1]
+
+# teachers is a dictionary that maps teacher id to the classes they teach
 teachers = constraints[2]
+
+# times is a dictionary that maps time slot ids to the classes in that time slot
+# all slots start empty
 times = constraints[3]
 
 studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
@@ -88,6 +96,10 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         if bestSlot != None:
             courseTimeDict[bestSlot].append(course)
     roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
+    courseDict = { course:{
+        'room': roomDict[course],
+        'teacher': 
+        } for course in courses}
     studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
     #need to parse this
     return
