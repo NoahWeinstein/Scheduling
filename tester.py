@@ -70,9 +70,8 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         'time': courseToTime[course],
         'students': []
         } for course in courses}
-        studentsInCourse = fillStudents(studentPrefs, courseDict)
-        #need to parse this
-        return
+        fillStudents(studentPrefs, courseDict)
+        return courseDict
 
 courseList = [1, 2, 3, 4]
 conflict_matrix = {(1,1):4, (1,2):2, (1,3):0, (1,4):2, (2,1):2, (2,2):8, (2,3):5, (2,4):1, (3,1):0, (3,2):5, (3,3):5, (3,4):0, (4,1):2, (4,2):1, (4,3): 0, (4,4):3}
