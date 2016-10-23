@@ -69,7 +69,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         'teacher': inv_teachers[course],
         'time': courseToTime[course]
         } for course in courses}
-	studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
+	studentsInCourse = fill_students(studentPrefs, courseDict)
 	#need to parse this
 	return
 
