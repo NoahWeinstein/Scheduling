@@ -3,6 +3,9 @@ import argparse
 
 import parse_inputs
 
+from fill_students import *
+from make_output import *
+
 parser = argparse.ArgumentParser(description='Create a schedule')
 parser.add_argument('constraints', type=str, nargs=1,
                     help='Name of constraints file.')
@@ -34,7 +37,6 @@ for teacher in teachers:
 times = constraints[3]
 
 studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
-print rooms, courses, teachers, times, studentPrefs
 
 
 
@@ -80,60 +82,63 @@ def make_popularity_list (courses_dictionary, con_mat):
 		popularity.append((course,con_mat[(course,course)]))
 	popularity.sort(key= lambda student: student[1])
 	#print popularity
-	return popularitys
+	return popularity
 
 
 		
 
 # this function is almost identical with the pseudocode, but doesn't mesh super well with the rest of the functions
 		#for example, we don't have a "fillStudents" function, as the last line would have you suggest.
-def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):	
-	courseToTime = {course: None for course in courses}
-	conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
-	popularities = make_popularity_list(courses, conflicts)
-	for course in popularities:
-		bestSlot = None
-		bestConflictNum = float('inf')
-		for time in courseTimesDict:
-			tempConflictNum = 0
-			for conflictingCourse in courseTimesDict[time]:
-				tempConflictNum += conflicts[(conflictingCourse, course[0])]
-			if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
-				bestSlot = time
-				bestConflictNum = tempConflictNum
-		if bestSlot != None:
-			courseTimesDict[bestSlot].append(course[0])
-			courseToTime[course[0]] = bestSlot
-			
-	#print courseTimesDict
-	roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-	courseDict = { course:{
+def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
+                     inv_teachers):  
+        courseToTime = {course: None for course in courses}
+        conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
+        popularities = make_popularity_list(courses, conflicts)
+        for course in popularities:
+                bestSlot = None
+                bestConflictNum = float('inf')
+                for time in courseTimesDict:
+                        tempConflictNum = 0
+                        for conflictingCourse in courseTimesDict[time]:
+                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                        if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
+                                bestSlot = time
+                                bestConflictNum = tempConflictNum
+                if bestSlot != None:
+                        courseTimesDict[bestSlot].append(course[0])
+                        courseToTime[course[0]] = bestSlot
+                        
+        roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
+        courseDict = { course:{
         'room': roomDict[course],
         'roomSize': rooms[roomDict[course]],
         'popularity': conflicts[course, course],
         'teacher': inv_teachers[course],
-        'time': courseToTime[course]
+        'time': courseToTime[course],
+        'students': []
         } for course in courses}
-	#studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
-	#need to parse this
-	return
+        fillStudents(studentPrefs, courseDict)
+        return courseDict
 
 #c = 100
 #students = make_student_dictionary(c,1000)
 
-con_mat = make_conflict_matrix(studentPrefs,teachers,courses)
+#con_mat = make_conflict_matrix(studentPrefs,teachers,courses)
 
 
 #teachers = make_teachers(c)
 
 
-rooms = [20, 30, 30, 40]
+#rooms = [20, 30, 30, 40]
 
-class_times = {1:[0],2:[0],3:[0],4:[0],5:[0],6:[0]}
+#class_times = {1:[0],2:[0],3:[0],4:[0],5:[0],6:[0]}
 
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
+courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
+                                 inv_teachers)
 
+make_output(courseListNew, args.output[0])
 
 
 

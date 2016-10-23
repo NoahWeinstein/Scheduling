@@ -7,10 +7,11 @@ def make_output(out_dict,output_name):
 		for course in out_dict:
 			line_out = [str(course)]
 			rtts_list = [
-				str(out_dict[course]["Room"]),
-				str(out_dict[course]["Teacher"]),
-				str(out_dict[course]["Time"]),
-				" ".join([str(item) for item in out_dict[course]["Students"]])
+				str(out_dict[course]["room"]),
+				str(out_dict[course]["teacher"]),
+				str(out_dict[course]["time"]),
+				" ".join([str(item) for item in
+              out_dict[course]["students"]])
 				]
 			line_out.extend(rtts_list)
 			output.append(("\t").join(line_out))
