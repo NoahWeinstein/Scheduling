@@ -1,3 +1,5 @@
+from fill_students import *
+
 def make_popularity_list (courses_dictionary, con_mat):
 	#this section is the popularityList from the write-up
 	popularity = []	
@@ -67,7 +69,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         'teacher': inv_teachers[course],
         'time': courseToTime[course]
         } for course in courses}
-	#studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
+	studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
 	#need to parse this
 	return
 
