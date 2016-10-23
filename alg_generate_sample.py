@@ -140,7 +140,7 @@ courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
 
 make_output(courseListNew, args.output[0])
 
-
+print "Done!"
 
 
 
