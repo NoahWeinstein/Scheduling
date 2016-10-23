@@ -90,34 +90,6 @@ courseId:
         'students': students_list               list of the students in the course
                                                         this gets appended with our fill students
 '''
-#sample courseDict
-courseDict = {        1: {    'popularity': 20,
-                                'time': 1,
-                                'room': 1,
-                                'roomSize': 20},
-                        2: {    'popularity': 15,
-                                'time': 2,
-                                'room': 1,
-                                'roomSize': 20},
-                        3: {    'popularity': 15,
-                                'time': 3,
-                                'room': 1,
-                                'roomSize': 20},
-                        4: {    'popularity': 10,
-                                'time': 4,
-                                'room': 1,
-                                'roomSize': 20},
-                        5: {    'popularity': 15,
-                                'time': 1,
-                                'room': 2,
-                                'roomSize': 10},
-                        6: {    'popularity': 10,
-                                'time': 2,
-                                'room': 2,
-                                'roomSize': 10}
-                }
-
-
 
 
 
