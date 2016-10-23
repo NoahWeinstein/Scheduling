@@ -82,7 +82,7 @@ inv_teachers = {}
 for teacher in teachers:
     for course_taught in teachers[teacher]:
         inv_teachers[course_taught] = teacher
-students = {1:(1, 4), 2:(4, 1), 3:(2, 1), 4:(1, 2), 5:(2, 3), 6:(3, 2), 7:(3, 2), 8:(3, 2), 9:(3, 2), 10:(2,4)}
+students = {1:[1, 4], 2:[4, 1], 3:[2, 1], 4:[1, 2], 5:[2, 3], 6:[3, 2], 7:[3, 2], 8:[3, 2], 9:[3, 2], 10:[2,4]}
 
 times = {1:[], 2:[]}
 
