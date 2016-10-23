@@ -48,7 +48,7 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
 
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
-    big_rooms = sorted(rooms, reverse = True)
+    big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
     for slot in class_times_dict:
         #sort descending based on popularity
         pop_slot = sorted(slot, key = lambda x: con_mat[(x,x)], reverse = True)
