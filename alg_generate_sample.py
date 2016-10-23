@@ -17,11 +17,17 @@ constraints = parse_inputs.parse_constraints(args.constraints[0])
 # rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
 
-# courses is a list of class ids
+# courses is a list of course ids
 courses = constraints[1]
 
-# teachers is a dictionary that maps teacher id to the classes they teach
+# teachers is a dictionary that maps teacher id to the courses they teach
 teachers = constraints[2]
+
+# inv_teachers is the inversion of teachers that maps course ids to teacher ids
+inv_teachers = {}
+for teacher in teachers:
+    for course_taught in teachers[teacher]:
+        inv_teachers[course_taught] = teacher
 
 # times is a dictionary that maps time slot ids to the classes in that time slot
 # all slots start empty
@@ -88,17 +94,20 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         bestConflictNum = float('inf')
         for time in courseTimesDict:
             tempConflictNum = 0
-            for conflictingCourse in courseTimeDict[time]:
+            for conflictingCourse in courseTimesDict[time]:
                 tempConflictNum += conflicts[(conflictingCourse, course)]
             if (tempConflicNum < bestConflictNum and len(courseTimesDict) < len(rooms)):
                 bestSlot = time
                 bestConflictNum = tempConflictNum
         if bestSlot != None:
-            courseTimeDict[bestSlot].append(course)
+            courseTimesDict[bestSlot].append(course)
     roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
     courseDict = { course:{
         'room': roomDict[course],
-        'teacher': 
+        'roomSize': rooms[roomDict[course]],
+        'popularity': popularities[course],
+        'teacher': inv_teachers[course],
+        'time': courseTimesDict[course]
         } for course in courses}
     studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
     #need to parse this
