@@ -14,9 +14,23 @@ parser.add_argument('output', type=str, nargs = 1,
 args = parser.parse_args()
 
 constraints = parse_inputs.parse_constraints(args.constraints[0])
+# rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
+
+# courses is a list of course ids
 courses = constraints[1]
+
+# teachers is a dictionary that maps teacher id to the courses they teach
 teachers = constraints[2]
+
+# inv_teachers is the inversion of teachers that maps course ids to teacher ids
+inv_teachers = {}
+for teacher in teachers:
+    for course_taught in teachers[teacher]:
+        inv_teachers[course_taught] = teacher
+
+# times is a dictionary that maps time slot ids to the classes in that time slot
+# all slots start empty
 times = constraints[3]
 
 studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
@@ -49,7 +63,7 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
 
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
-    big_rooms = sorted(rooms, reverse = True)
+    big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
     for slot in class_times_dict:
         #sort descending based on popularity
         pop_slot = sorted(slot, key = lambda x: con_mat[(x,x)], reverse = True)
@@ -81,14 +95,21 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
         bestConflictNum = float('inf')
         for time in courseTimesDict:
             tempConflictNum = 0
-            for conflictingCourse in courseTimeDict[time]:
+            for conflictingCourse in courseTimesDict[time]:
                 tempConflictNum += conflicts[(conflictingCourse, course)]
             if (tempConflicNum < bestConflictNum and len(courseTimesDict) < len(rooms)):
                 bestSlot = time
                 bestConflictNum = tempConflictNum
         if bestSlot != None:
-            courseTimeDict[bestSlot].append(course)
+            courseTimesDict[bestSlot].append(course)
     roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
+    courseDict = { course:{
+        'room': roomDict[course],
+        'roomSize': rooms[roomDict[course]],
+        'popularity': conflicts[course, course],
+        'teacher': inv_teachers[course],
+        'time': courseTimesDict[course]
+        } for course in courses}
     studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
     #need to parse this
     return
