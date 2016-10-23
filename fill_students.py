@@ -53,7 +53,7 @@ def leastPotentialForOverflow(conflicts, scheduleDict):
 
 # isNotFull will be 0 if it's full, so isNotFull is true if it's not full
 def isNotFull(course, scheduleDict):
-        scheduleDict[course]['roomSize'] - len(scheduleDict[course]['students'])
+        return scheduleDict[course]['roomSize'] - len(scheduleDict[course]['students'])
 
 def fillStudents(studentPrefs, scheduleDict):
         for student in studentPrefs:
@@ -62,10 +62,7 @@ def fillStudents(studentPrefs, scheduleDict):
                         if isNotFull(course, scheduleDict):
                                 if  hasNoConflicts(course, prefs):
                                         # if there's room in the course and it doesn't conflict with any other preferences
-                                        if scheduleDict[course]['students']:
-                                                scheduleDict[course]['students'].append[student]
-                                        else:
-                                                scheduleDict[course]['students'] = [student]
+                                        scheduleDict[course]['students'].append[student]
                                 else:
                                         prefs.append(coursesThatConflict(course,prefs))
                                         # will add a list of courses that conflict in prefs)
@@ -82,7 +79,6 @@ def fillStudents(studentPrefs, scheduleDict):
                                 # and remove conflicts from prefs
                                 for conflict in conflicts:
                                         prefs.remove(conflict)
-        return studentsInCourse
                         
 
 
