@@ -37,12 +37,13 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
                 for i in range (0, len(cur_pref_list)):
                         for j in range (i, len(cur_pref_list)):
                                 conflict_dict[(cur_pref_list[i],cur_pref_list[j])] += 1
-                                conflict_dict[(cur_pref_list[j],cur_pref_list[i])] += 1
+				if i != j:
+                                	conflict_dict[(cur_pref_list[j],cur_pref_list[i])] += 1
         
         for teacher in teacher_dictionary:
                 conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = float('inf')
                 conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = float('inf')
-
+	print conflict_dict
         return conflict_dict
 
 
@@ -58,7 +59,7 @@ def assign_rooms(class_times_dict, rooms, con_mat):
             counter += 1
     return class_to_room
 
-def make_popularity_list (courses, conflicts, teachers):
+def make_popularity_list (courses_dictionary, con_mat):
 	#this section is the popularityList from the write-up
 	popularity = []	
 	for course in courses_dictionary:       #this structure is modeled after the con_mat lake built
@@ -74,7 +75,7 @@ def make_popularity_list (courses, conflicts, teachers):
 		#for example, we don't have a "fillStudents" function, as the last line would have you suggest.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
     conflicts = make_conflict_matrix(studentPrefs, teachers)
-    popularities = popularityList(courses, conflicts, teachers)
+    popularities = make_popularity_list(courses, conflicts, teachers)
     for course in popularities:
         bestSlot = None
         bestConflictNum = float('inf')
