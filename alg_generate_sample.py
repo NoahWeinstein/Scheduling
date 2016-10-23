@@ -48,7 +48,7 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
 
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
-    big_rooms = sorted(rooms, reverse = True)
+    big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
     for slot in class_times_dict:
         #sort descending based on popularity
         pop_slot = sorted(slot, key = lambda x: con_mat[(x,x)], reverse = True)
@@ -67,30 +67,6 @@ def make_popularity_list (courses, conflicts, teachers):
 	print popularity
 	return popularity
 
-def hasNoConflicts(currentCourse, listOfPrefs):
-	# check if their time_id is the same
-	for course in listOfPrefs:
-		# make sure currentCourse != course bc that'll have the same time
-		if currentCourse != course && scheduleDict[currentCourse]['time'] == scheduleDict[course]['time']:
-			return false
-	return true
-
-def fill_students(students, studentPrefs, courseTimesDict, roomDict):
-	studentsInCourse = {}
-	for student in students:
-		prefs = studentPrefs[student] # rename for nicer code? doesn't matter...
-		for course in prefs:
-			if !scheduleDict[course]['full'] && hasNoConflicts(course, prefs):
-				# if there's room in the course and it doesn't conflict with any other preferences
-				if studentsInCourse[course]:
-					studentsInCourse[course].append[student]
-				else:
-					studentsInCourse[course] = [student]
-				prefs.remove(course)
-	for student in students:
-		prefs = studentPrefs[student]
-		for course in prefs:
-			# now prefs just has courses that conflict
 
 		
 
