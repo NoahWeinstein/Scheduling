@@ -38,10 +38,10 @@ def leastPotentialForOverflow(conflicts, courseDict):
         # if positive or zero has no potential to overflow
         # if negative, has potential, so looking for course with overflow closest to 0
         leastOverflowValue = float("-infinity")
-        leastOverflowCourse = null
+        leastOverflowCourse = 0
         noOverflowList = []
         for course in conflicts:
-                overflow = courseDict['roomSize'] - courseDict['popularity']
+                overflow = courseDict[course]['roomSize'] - courseDict[course]['popularity']
                 if overflow >= 0:
                         # if there's a course with no overflow, then choose it (random one)
                         return course
@@ -63,23 +63,16 @@ def fillStudents(studentPrefs, courseDict):
                                 if  hasNoConflicts(course, prefs, courseDict):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)
-                                else:
-                                        prefs.append(coursesThatConflict(course, prefs, courseDict))
-                                        # will add a list of courses that conflict in prefs)
-                                for removeCourse in coursesThatConflict(course, prefs, courseDict):
-                                        prefs.remove(removeCourse)
-                                        # will remove course and courses that conflict with it if any exist
+                                        prefs.remove(course)
         for student in studentPrefs:
                 prefs = studentPrefs[student]
-                for conflictGroup in prefs:
-                        # now prefs just has lists of courses that conflict with each other
-                        # add the student to the conflicting course with the least potential for overflow
-                        if isNotFull(course, courseDict):                               
-                                studentsInCourse.append(leastPotentialForOverflow(conflictGroup, courseDict))
-                                # and remove conflicts from prefs
+                for course in prefs:
+                        if isNotFull(course, courseDict):
+                                conflicts = coursesThatConflict(course, prefs, courseDict)
+                                choice = leastPotentialForOverflow(conflicts, courseDict)
+                                '''Need to change time analysis where it says to separate prefs into groups'''
                                 for conflict in conflicts:
                                         prefs.remove(conflict)
-                        
 
 
 
