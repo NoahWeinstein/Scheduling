@@ -87,7 +87,8 @@ def make_popularity_list (courses_dictionary, con_mat):
 
 # this function is almost identical with the pseudocode, but doesn't mesh super well with the rest of the functions
 		#for example, we don't have a "fillStudents" function, as the last line would have you suggest.
-def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
+def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):	
+	courseToTime = {course: None for course in courses}
 	conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
 	popularities = make_popularity_list(courses, conflicts)
 	for course in popularities:
@@ -102,16 +103,18 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
 				bestConflictNum = tempConflictNum
 		if bestSlot != None:
 			courseTimesDict[bestSlot].append(course[0])
-	print courseTimesDict
+			courseToTime[course[0]] = bestSlot
+			
+	#print courseTimesDict
 	roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
 	courseDict = { course:{
         'room': roomDict[course],
         'roomSize': rooms[roomDict[course]],
         'popularity': conflicts[course, course],
         'teacher': inv_teachers[course],
-        'time': courseTimesDict[course]
+        'time': courseToTime[course]
         } for course in courses}
-	studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
+	#studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
 	#need to parse this
 	return
 

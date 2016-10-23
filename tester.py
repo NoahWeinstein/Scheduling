@@ -40,7 +40,8 @@ def assign_rooms(class_times_dict, rooms, con_mat):
             counter += 1
     return class_to_room
 
-def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
+def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):	
+	courseToTime = {course: None for course in courses}
 	conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
 	popularities = make_popularity_list(courses, conflicts)
 	for course in popularities:
@@ -55,9 +56,17 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs):
 				bestConflictNum = tempConflictNum
 		if bestSlot != None:
 			courseTimesDict[bestSlot].append(course[0])
+			courseToTime[course[0]] = bestSlot
+			
 	print courseTimesDict
 	roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-	print roomDict
+	courseDict = { course:{
+        'room': roomDict[course],
+        'roomSize': rooms[roomDict[course]],
+        'popularity': conflicts[course, course],
+        'teacher': inv_teachers[course],
+        'time': courseToTime[course]
+        } for course in courses}
 	#studentsInCourse = fill_students(studentPrefs, courseTimesDict, roomDict)
 	#need to parse this
 	return
@@ -66,6 +75,10 @@ courseList = [1, 2, 3, 4]
 conflict_matrix = {(1,1):4, (1,2):2, (1,3):0, (1,4):2, (2,1):2, (2,2):8, (2,3):5, (2,4):1, (3,1):0, (3,2):5, (3,3):5, (3,4):0, (4,1):2, (4,2):1, (4,3): 0, (4,4):3}
 
 teachers = {1:(1,3), 2:(2,4)}
+inv_teachers = {}
+for teacher in teachers:
+    for course_taught in teachers[teacher]:
+        inv_teachers[course_taught] = teacher
 students = {1:(1, 4), 2:(4, 1), 3:(2, 1), 4:(1, 2), 5:(2, 3), 6:(3, 2), 7:(3, 2), 8:(3, 2), 9:(3, 2), 10:(2,4)}
 
 times = {1:[], 2:[]}
