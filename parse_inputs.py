@@ -1,3 +1,10 @@
+'''
+This file contains functions that parse the inputs that are passed in as text
+files. Currently they assume that all ids are integers. This will have to be
+adapted for the Haverford data.
+
+'''
+
 def parse_constraints(constraints_name):
     with open(constraints_name,'r') as constraints_file:
         #last number of first line is number of time slots
