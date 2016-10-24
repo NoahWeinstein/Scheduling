@@ -30,7 +30,6 @@ def parse_constraints(constraints_name):
 def parse_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
         num_students = int(prefs_file.readline().split()[-1])
-        print num_students
         student_prefs = {}
         for i in range(0, num_students):
             line = prefs_file.readline().split()
