@@ -1,3 +1,7 @@
+'''
+This file accepts the command line arguments and actually makes the schedule.
+'''
+
 from random import randint
 import argparse
 
@@ -88,8 +92,9 @@ def make_popularity_list (courses_dictionary, con_mat):
 
 		
 
-# this function is almost identical with the pseudocode, but doesn't mesh super well with the rest of the functions
-		#for example, we don't have a "fillStudents" function, as the last line would have you suggest.
+# this function is almost identical with the pseudocode. It is responsible for
+# creating the dictionary that maps a course to its teacher, room, students,
+# and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                      inv_teachers):  
         courseToTime = {course: None for course in courses}
