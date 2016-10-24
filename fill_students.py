@@ -24,7 +24,7 @@ def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
 def coursesThatConflict(currentCourse, listOfPrefs, courseDict):
         conflicts = []
         for course in listOfPrefs:
-                if courseDict[currentCourse]['time'] == courseDict[course]['time']:
+                if course != -1 and courseDict[currentCourse]['time'] == courseDict[course]['time']:
                         # then it conflicts with this course, can be itself
                         conflicts.append(course)
         return conflicts
