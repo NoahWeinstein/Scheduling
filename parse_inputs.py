@@ -26,7 +26,6 @@ def parse_constraints(constraints_name):
             teacher_to_classes[teacher_id].append(class_id)
         return (rooms, courses, teacher_to_classes, times)
 
-
 def parse_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
         num_students = int(prefs_file.readline().split()[-1])
@@ -36,7 +35,6 @@ def parse_prefs(prefs_name):
             student_id = int(line.pop(0))
             line = [int(num) for num in line]
             student_prefs[student_id] = line
-
         return student_prefs
 
 

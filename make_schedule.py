@@ -81,7 +81,7 @@ def make_popularity_list (courses_dictionary, con_mat):
 	popularity = []	
 	for course in courses_dictionary:       #this structure is modeled after the con_mat lake built
 		popularity.append((course,con_mat[(course,course)]))
-	popularity.sort(key= lambda student: student[1])
+	popularity.sort(key= lambda student: student[1], reverse = True)
 	#print popularity
 	return popularity
 
@@ -118,6 +118,8 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
         'time': courseToTime[course],
         'students': []
         } for course in courses}
+
+
         fillStudents(studentPrefs, courseDict)
         return courseDict
 

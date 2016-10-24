@@ -11,7 +11,9 @@ def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
         # check if their time_id is the same
         for course in listOfPrefs:
                 # make sure currentCourse != course bc that'll have the same time
-                if currentCourse != course and courseDict[currentCourse]['time'] == courseDict[course]['time']:
+                # hacky -1 solution to avoid courses we have already added a
+                # student to
+                if course != -1 and currentCourse != course and courseDict[currentCourse]['time'] == courseDict[course]['time']:
                         return False
         return True
 
@@ -63,16 +65,16 @@ def fillStudents(studentPrefs, courseDict):
                                 if  hasNoConflicts(course, prefs, courseDict):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)
-                                        prefs.remove(course)
+                                        prefs[prefs.index(course)] = -1
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                        if isNotFull(course, courseDict):
+                        if course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
                                 '''Need to change time analysis where it says to separate prefs into groups'''
                                 for conflict in conflicts:
-                                        prefs.remove(conflict)
+                                        prefs[prefs.index(conflict)] = -1
 
 
 
