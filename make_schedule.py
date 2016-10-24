@@ -6,7 +6,8 @@ import parse_inputs
 from fill_students import *
 from make_output import *
 
-parser = argparse.ArgumentParser(description='Create a schedule')
+parser = argparse.ArgumentParser(description='Create a schedule', usage =
+                                 '<constraints> <preferences> <output>. [-h] for help.')
 parser.add_argument('constraints', type=str, nargs=1,
                     help='Name of constraints file.')
 parser.add_argument('preferences', type=str, nargs=1,
