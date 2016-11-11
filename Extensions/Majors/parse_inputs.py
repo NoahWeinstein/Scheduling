@@ -49,6 +49,7 @@ def parse_prefs(prefs_name):
             line = prefs_file.readline().split()
             student_id = int(line.pop(0))
             line = [int(num) for num in line]
+            line = [num for num in line if line.count(num) < 2] #not fast
             student_prefs[student_id] = line
         return student_prefs
 
