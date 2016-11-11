@@ -39,16 +39,31 @@ def get_room_sizes(list_of_dicts):
 
 def get_student_prefs_enrolled(list_of_dicts):
   student_prefs = {}
+  major_counts = {}
+  majors = {}
   for dict in list_of_dicts:
     student = dict["Student"]
     course = dict["Course ID"]
     status = dict["Status"]
     campus = dict["College"]
+    subject = dict["Subject"]
     if status == "E" and campus == "H":
       if student in student_prefs:
         student_prefs[student].append(course)
       else:
         student_prefs[student] = [course]
+      if student in major_counts:
+        if subject in major_counts[student]:
+          major_counts[student][subject] += 1
+        else:
+          major_counts[student][subject] = 1
+      else:
+        major_counts[student] = {subject: 1}
+  
+  for student in student_prefs:
+    major = max(major_counts[student], key= lambda m: major_counts[student][m])
+    student_prefs[student].append(major)
+
   return student_prefs
 
 def get_courses(list_of_dicts):
@@ -72,7 +87,7 @@ def get_prof_courses(list_of_dicts):
           profs[prof].append(course)
       else:
         profs[prof] = [course]
-  return profs 
+  return profs
 
 def get_class_times(list_of_dicts):
   times = []
@@ -160,12 +175,22 @@ def write_teachers_to_file(list_of_dicts, f):
     f.write(courses[course]["Instructor ID"])
     f.write("\n")
 
+#Added by Noah
+def write_course_majors_to_file(list_of_dicts, f):
+  courses = get_courses(list_of_dicts)
+  f.write("Majors \t" + str(len(courses)) + "\n")
+  for course in courses:
+    f.write(course + "\t")
+    f.write(courses[course]["Subject"])
+    f.write("\n")
+
 def write_constraints_to_file(list_of_dicts, filename):
   f = open(filename, 'w')
   write_class_times_to_file(list_of_dicts, f)
   write_rooms_to_file(list_of_dicts, f)
   write_num_classes_to_file(list_of_dicts, f)
   write_teachers_to_file(list_of_dicts, f)
+  write_course_majors_to_file(list_of_dicts, f)
   f.close()
 
 if len(sys.argv) != 4:

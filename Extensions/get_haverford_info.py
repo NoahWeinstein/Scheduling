@@ -43,7 +43,8 @@ def get_student_prefs_enrolled(list_of_dicts):
     student = dict["Student"]
     course = dict["Course ID"]
     status = dict["Status"]
-    if status == "E":
+    campus = dict["College"]
+    if status == "E" and campus == "H":
       if student in student_prefs:
         student_prefs[student].append(course)
       else:
