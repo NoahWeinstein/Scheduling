@@ -47,6 +47,7 @@ studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
 
 #some restructuring of other functions to make them work with the new conflict matrix might need to happen
 def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_dictionary):
+        print courses_dictionary
 	conflict_dict = {}
 	#initializes conflict_dict:
 	for course_first in courses_dictionary:
