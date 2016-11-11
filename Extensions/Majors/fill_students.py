@@ -57,11 +57,19 @@ def leastPotentialForOverflow(conflicts, courseDict):
 def isNotFull(course, courseDict):
         return courseDict[course]['roomSize'] - len(courseDict[course]['students'])
 
-def fillStudents(studentPrefs, courseDict):
+def fillStudents(studentPrefs, courseDict, coursesToMajors, studentsToMajors):
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                        if isNotFull(course, courseDict):
+                        if (isNotFull(course, courseDict) and
+                                coursesToMajors[course] == studentsToMajors[student]):
+                                if hasNoConflicts(course, prefs, courseDict):
+                                        courseDict[course]['students'].append(student)
+                                        prefs[prefs.index(course)] = -1
+        for student in studentPrefs:
+                prefs = studentPrefs[student]
+                for course in prefs:
+                        if course != -1 and isNotFull(course, courseDict):
                                 if  hasNoConflicts(course, prefs, courseDict):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)

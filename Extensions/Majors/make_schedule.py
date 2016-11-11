@@ -41,7 +41,11 @@ for teacher in teachers:
 # all slots start empty
 times = constraints[3]
 
-studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+coursesToMajors = constraints[4]
+
+prefs = parse_inputs.parse_prefs(args.preferences[0])
+studentPrefs = prefs[0]
+studentsToMajors = prefs[1]
 
 
 
@@ -100,7 +104,7 @@ def make_popularity_list (courses_dictionary, con_mat):
 # creating the dictionary that maps a course to its teacher, room, students,
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
-                     inv_teachers):  
+                     inv_teachers, coursesToMajors, studentsToMajors ):  
         courseToTime = {course: None for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
@@ -129,7 +133,8 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
         } for course in courses}
 
 
-        fillStudents(studentPrefs, courseDict)
+        fillStudents(studentPrefs, courseDict, coursesToMajors,
+                     studentsToMajors)
         return courseDict
 
 #c = 100
@@ -148,7 +153,8 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
 courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
-                                 inv_teachers)
+                                 inv_teachers, coursesToMajors,
+                                 studentsToMajors)
 
 make_output(courseListNew, args.output[0])
 

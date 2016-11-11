@@ -62,17 +62,13 @@ def parse_prefs(prefs_name):
             student_id = int(line.pop(0))
             student_prefs[student_id] = []
             for e in line:
-                if (not e in student_prefs[student_id]):
                     try:
-                        student_prefs[student_id].append(int(e))
+                        if (not int(e) in student_prefs[student_id]):
+                            student_prefs[student_id].append(int(e))
                     except ValueError:
                         student_to_major[student_id] = e
             #line = [int(num) for num in line]
             #line = [num for num in line if line.count(num) < 2] #not fast
             #student_prefs[student_id] = line
         return (student_prefs, student_to_major)
-
-
-parse_prefs('new_prefs.txt')
-print 'done!'
 
