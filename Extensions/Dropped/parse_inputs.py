@@ -10,7 +10,6 @@ def parse_constraints(constraints_name):
     with open(constraints_name,'r') as constraints_file:
         #last number of first line is number of time slots
         num_times = int(constraints_file.readline().split()[-1])
-        print num_times
         times = {x:[] for x in range(1,num_times+1)}
         for i in range (0, num_times):
             constraints_file.readline()
@@ -54,4 +53,4 @@ def parse_prefs(prefs_name):
             student_prefs[student_id] = line
         return student_prefs
 
-#parse_constraints("haverfordConstraints.txt")
+
