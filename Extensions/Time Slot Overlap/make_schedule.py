@@ -93,17 +93,34 @@ def make_popularity_list (courses_dictionary, con_mat):
 	#print popularity
 	return popularity
 
-
+def make_timeslot_overlap_dict (courseTimesDefDict):
+	return_dict = {time: [0] for time in courseTimesDefDict}
+	for time in courseTimesDefDict:
+		time_start = courseTimesDefDict[time][0]
+		time_end = courseTimesDefDict[time][1]
+		time_days = courseTimesDefDict[time][2]
+		for compareTime in courseTimesDefDict:
+			compare_start = courseTimesDefDict[compareTime][0]
+			compare_end = courseTimesDefDict[compareTime][1]
+			compare_days = courseTimesDefDict[compareTime][2]
+# for help with any, used: http://stackoverflow.com/questions/3170055/test-if-lists-share-any-items-in-python
+			if (any(i in time_days for i in compare_days) and compare_end > time_start and compare_start < time_end):
+				return_dict[time].append(compareTime)
+				return_dict[time][0] = return_dict[time][0] += 1
+	return return_dict
 		
 
 # this function is almost identical with the pseudocode. It is responsible for
 # creating the dictionary that maps a course to its teacher, room, students,
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
-                     inv_teachers):  
+                     inv_teachers, courseTimesDefDict):
         courseToTime = {course: None for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
+
+	timeslot_overlaps = make_timeslot_overlap_dict(courseTimesDefDict)
+
         for course in popularities:
                 bestSlot = None
                 bestConflictNum = float('inf')
