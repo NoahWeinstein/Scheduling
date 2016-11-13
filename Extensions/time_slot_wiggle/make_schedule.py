@@ -152,16 +152,27 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                         courseToTime[str(course[0])+'c']= bestSlot
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-        courseDict = { course:{
-        'room': roomDict[course],
-        'roomSize': rooms[roomDict[course]],
+        abc=['a','b','c']
+        print rooms
+        print "\n\n"
+        print roomDict
+        print "\n\n"
+        print inv_teachers   
+        courseDict = { str(course)+letter:{
+        'room': roomDict[str(course)+letter],
+        'roomSize': rooms[roomDict[str(course)+letter]],
         'popularity': conflicts[course, course],
         'teacher': inv_teachers[course],
-        'time': courseToTime[course],
+        'time': courseToTime[str(course)+letter],
         'students': []
-        } for course in courses}
-
-
+        } for course in courses for letter in abc}
+        print courseDict
+        print studentPrefs
+        for student in studentPrefs:
+            new_prefs = []
+            for course in studentPrefs[student]:
+                new_prefs.extend([str(course)+'a',str(course)+'b',str(course)+'c'])
+            studentPrefs[student]=new_prefs
         fillStudents(studentPrefs, courseDict)
         return courseDict
 
