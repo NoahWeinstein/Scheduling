@@ -122,8 +122,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
         'teacher': inv_teachers[course],
         'time': courseToTime[course],
         'students': []
-        } for course in courses}
-
+        } for course in courses if course in roomDict}
 
         fillStudents(studentPrefs, courseDict)
         return courseDict
@@ -143,8 +142,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
-courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
-                                 inv_teachers)
+courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs, inv_teachers)
 
 make_output(courseListNew, args.output[0])
 
