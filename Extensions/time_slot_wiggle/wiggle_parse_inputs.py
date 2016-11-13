@@ -133,6 +133,48 @@ def parse_constraints(constraints_name):
             teacher_to_classes[teacher_id].append(class_id)
         courses.sort()
         return [rooms, courses, teacher_to_classes, times]
+def make_new_contraints(constraints_name):
+    with open(constraints_name,'r') as constraints_file:
+        with open('new_'+constraints_name,'w') as new_file:
+            old_constraints = constraints_file.read()
+            change=False
+            for line in old_constraints.split('\n'):
+                if line[:8]=='Teachers':
+                    change=True
+                    new_file.write(line+'\n')
+                    continue
+                elif change==True:
+                    course_teacher = line.split("\t")
+                    if len(course_teacher)!=2:
+                        #print "potential problem with", course_teacher
+                        pass
+                    else:
+                        course = course_teacher[0]
+                        teacher = course_teacher[1]
+                        new_file.write(str(course)+"a\t"+teacher+'\n')
+                        new_file.write(str(course)+"b\t"+teacher+'\n')
+                        new_file.write(str(course)+"c\t"+teacher+'\n')
+                else:
+                    new_file.write(line+'\n')
+def make_new_prefs(prefs_name):
+    with open(prefs_name, 'r') as prefs_file:
+        with open('new_'+prefs_name,'w') as new_file:
+            old_prefs = prefs_file.read().split('\n')
+            first = True
+            for student_prefs in old_prefs:
+                if first:
+                    new_file.write(student_prefs+'\n')
+                    first = False
+                else:
+                    student_prefs = student_prefs.split('\t')
+                    if len(student_prefs)==2:
+                        student = student_prefs[0]
+                        prefs = student_prefs[1]
+                        prefs = prefs.split()
+                        new_pref=""
+                        for pref in prefs:
+                            new_pref += pref+'a '+pref+'b '+pref+'c '
+                        new_file.write(student+'\t'+new_pref+'\n')
 def parse_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
         num_students = int(prefs_file.readline().split()[-1])
@@ -144,3 +186,5 @@ def parse_prefs(prefs_name):
             line = [num for num in line if line.count(num) < 2] #not fast
             student_prefs[student_id] = line
         return student_prefs
+make_new_contraints("haverfordConstraints.txt")
+make_new_prefs("haverfordStudentPrefs.txt")
