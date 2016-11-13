@@ -5,7 +5,7 @@ This file accepts the command line arguments and actually makes the schedule.
 from random import randint
 import argparse
 
-import parse_inputs
+import wiggle_parse_inputs
 
 from fill_students import *
 from make_output import *
@@ -21,7 +21,7 @@ parser.add_argument('output', type=str, nargs = 1,
 
 args = parser.parse_args()
 
-constraints = parse_inputs.parse_constraints(args.constraints[0])
+constraints = wiggle_parse_inputs.parse_constraints_mil_time(args.constraints[0])
 # rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
 
@@ -41,7 +41,9 @@ for teacher in teachers:
 # all slots start empty
 times = constraints[3]
 
-studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+times_def = constraints[4]
+
+studentPrefs = wiggle_parse_inputs.parse_prefs(args.preferences[0])
 
 
 
@@ -93,8 +95,10 @@ def make_popularity_list (courses_dictionary, con_mat):
 	#print popularity
 	return popularity
 
+
+# for help with "any", used: http://stackoverflow.com/questions/3170055/test-if-lists-share-any-items-in-python
 def make_timeslot_overlap_dict (courseTimesDefDict):
-	return_dict = {time: [0] for time in courseTimesDefDict}
+	return_dict = {time: [] for time in courseTimesDefDict}
 	for time in courseTimesDefDict:
 		time_start = courseTimesDefDict[time][0]
 		time_end = courseTimesDefDict[time][1]
@@ -103,36 +107,55 @@ def make_timeslot_overlap_dict (courseTimesDefDict):
 			compare_start = courseTimesDefDict[compareTime][0]
 			compare_end = courseTimesDefDict[compareTime][1]
 			compare_days = courseTimesDefDict[compareTime][2]
-# for help with any, used: http://stackoverflow.com/questions/3170055/test-if-lists-share-any-items-in-python
 			if (any(i in time_days for i in compare_days) and compare_end > time_start and compare_start < time_end):
 				return_dict[time].append(compareTime)
-				return_dict[time][0] = return_dict[time][0] += 1
+				#return_dict[time][0] = return_dict[time][0] + 1
 	return return_dict
-		
+
+def make_timeslot_list (timeslot_overlaps):
+	#this creates a list of sorted time slots, by number of overlaps, to iterate through
+	return_list = []
+	for time in timeslot_overlaps:
+		return_list.append(time)
+	
+	return_list.sort(key= lambda time: len(timeslot_overlaps[time]), reverse = False)
+	
+	return return_list
+
 
 # this function is almost identical with the pseudocode. It is responsible for
 # creating the dictionary that maps a course to its teacher, room, students,
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
-                     inv_teachers, courseTimesDefDict):
+                     inv_teachers, courseTimesDefDict):	
         courseToTime = {course: None for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
 
 	timeslot_overlaps = make_timeslot_overlap_dict(courseTimesDefDict)
+	timeslot_list = make_timeslot_list(timeslot_overlaps)
 
         for course in popularities:
                 bestSlot = None
                 bestConflictNum = float('inf')
-                for time in courseTimesDict:
+		timeSlotConflict = {}
+                for time in timeslot_list:
                         tempConflictNum = 0
-                        for conflictingCourse in courseTimesDict[time]:
-                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+			for slot in timeslot_overlaps[time]:
+				if (slot in timeSlotConflict):
+					tempConflictNum += timeSlotConflict[slot]
+				else:
+					currentConflictCount = 0
+				        for conflictingCourse in courseTimesDict[slot]:
+						currentConflictCount += conflicts[(conflictingCourse, course[0])]
+					tempConflictNum += currentConflictCount
+					timeSlotConflict[slot] = currentConflictCount
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
                                 bestSlot = time
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
                         courseTimesDict[bestSlot].append(course[0])
+			#print bestSlot
                         courseToTime[course[0]] = bestSlot
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
@@ -165,7 +188,7 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
 courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
-                                 inv_teachers)
+                                 inv_teachers,times_def)
 
 make_output(courseListNew, args.output[0])
 
