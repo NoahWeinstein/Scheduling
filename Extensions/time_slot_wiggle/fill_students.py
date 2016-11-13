@@ -55,6 +55,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
 
 # isNotFull will be 0 if it's full, so isNotFull is true if it's not full
 def isNotFull(course, courseDict):
+        # I think that the courses get assigned to the same room so this should be fine?
         return courseDict[course]['roomSize'] - len(courseDict[course]['students'])
 
 def fillStudents(studentPrefs, courseDict):
