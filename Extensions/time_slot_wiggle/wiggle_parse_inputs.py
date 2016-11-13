@@ -52,6 +52,52 @@ where mil_times looks like:
         a = parse_constraints(constraints_name)
         a.append(time_dict_info)
         return a
+def parse_constraints_wiggle(constraints_name):
+    """
+Adds a dictionary in poistions 4 (the 5th and last element of the list) that
+contains:
+     * the time (in millitary time) of the start and end of the class
+     * the days of the week as a list the class is on
+To clarify, the output looks like:
+    [rooms, courses, teacher_to_classes, times,mil_times]
+where mil_times looks like:
+    {class_id: [start,end,[days, of, week]]}
+    """
+    with open(constraints_name,'r') as constraints_file:
+        file = constraints_file.read()
+        file = file.split('\n')
+        times = []
+        for line in file:
+            line = line.split('\t')
+            if line[0]== "Rooms":
+                break
+            else:
+                times.append(line)
+        time_dict = {}
+        time_dict_info = {}
+        for time in times[1:]:
+            time_day = time[1].split()
+            days = []
+            if time_day[1]=="PM" and time_day[0][:2] != '12':
+                hour_min = time_day[0].split(':')
+                start = (int(hour_min[0])+12)*100 + int(hour_min[1])
+            else:
+                hour_min = time_day[0].split(':')
+                start = (int(hour_min[0]))*100 + int(hour_min[1])               
+
+            if time_day[3]=="PM" and time_day[2][:2] != '12':
+                hour_min = time_day[2].split(':')
+                end = (int(hour_min[0])+12)*100 + int(hour_min[1])
+            else:
+                hour_min = time_day[2].split(':')
+                end = (int(hour_min[0]))*100 + int(hour_min[1])
+            for item in time_day[4:]:
+                    time_dict_info[time[0]+item]=[start,end,item,end-start]
+                    time_dict[time[0]+item]=[]
+        a = parse_constraints(constraints_name)
+        a[3]=time_dict
+        a.append(time_dict_info)
+        return a
 
 def parse_constraints(constraints_name):
     with open(constraints_name,'r') as constraints_file:
@@ -87,7 +133,6 @@ def parse_constraints(constraints_name):
             teacher_to_classes[teacher_id].append(class_id)
         courses.sort()
         return [rooms, courses, teacher_to_classes, times]
-
 def parse_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
         num_students = int(prefs_file.readline().split()[-1])

@@ -5,7 +5,7 @@ This file accepts the command line arguments and actually makes the schedule.
 from random import randint
 import argparse
 
-import parse_inputs
+import wiggle_parse_inputs
 
 from fill_students import *
 from make_output import *
@@ -21,7 +21,7 @@ parser.add_argument('output', type=str, nargs = 1,
 
 args = parser.parse_args()
 
-constraints = parse_inputs.parse_constraints(args.constraints[0])
+constraints = wiggle_parse_inputs.parse_constraints_wiggle(args.constraints[0])
 # rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
 
@@ -41,7 +41,7 @@ for teacher in teachers:
 # all slots start empty
 times = constraints[3]
 
-studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+studentPrefs = wiggle_parse_inputs.parse_prefs(args.preferences[0])
 
 
 
@@ -101,10 +101,15 @@ def make_popularity_list (courses_dictionary, con_mat):
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                      inv_teachers):  
-        courseToTime = {course: None for course in courses}
+        courseToTime = {course: [] for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
         for course in popularities:
+            # We now want to assign each course to 3 time slots
+            # So, I just do the course assignment 3 times
+            # I know this is a stupid way of doing it, and it might slow it down
+            # But it is gloriously easy
+
                 bestSlot = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
@@ -116,7 +121,35 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
                         courseTimesDict[bestSlot].append(course[0])
-                        courseToTime[course[0]] = bestSlot
+                        courseToTime[course[0]].append(bestSlot)
+                
+
+                bestSlot = None
+                bestConflictNum = float('inf')
+                for time in courseTimesDict:
+                        tempConflictNum = 0
+                        for conflictingCourse in courseTimesDict[time]:
+                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                        if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
+                                bestSlot = time
+                                bestConflictNum = tempConflictNum
+                if bestSlot != None:
+                        courseTimesDict[bestSlot].append(course[0])
+                        courseToTime[course[0]].append(bestSlot)
+
+
+                bestSlot = None
+                bestConflictNum = float('inf')
+                for time in courseTimesDict:
+                        tempConflictNum = 0
+                        for conflictingCourse in courseTimesDict[time]:
+                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                        if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
+                                bestSlot = time
+                                bestConflictNum = tempConflictNum
+                if bestSlot != None:
+                        courseTimesDict[bestSlot].append(course[0])
+                        courseToTime[course[0]].append(bestSlot)
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
         courseDict = { course:{
