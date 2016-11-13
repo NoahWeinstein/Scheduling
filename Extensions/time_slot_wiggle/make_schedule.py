@@ -76,7 +76,7 @@ def assign_rooms(class_times_dict, rooms, con_mat):
     big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
     for slot in class_times_dict:
         #sort descending based on popularity
-        pop_slot = sorted(class_times_dict[slot], key = lambda x: con_mat[(x,x)], reverse = True)
+        pop_slot = sorted(class_times_dict[slot], key = lambda x: con_mat[(int(x[:-1]),int(x[:-1]))], reverse = True)
         counter = 0
         for pop_course in pop_slot:
             class_to_room[pop_course] = big_rooms[counter]
@@ -101,7 +101,7 @@ def make_popularity_list (courses_dictionary, con_mat):
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                      inv_teachers):  
-        courseToTime = {course: [] for course in courses}
+        courseToTime = {course: None for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
         for course in popularities:
@@ -109,19 +109,19 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
             # So, I just do the course assignment 3 times
             # I know this is a stupid way of doing it, and it might slow it down
             # But it is gloriously easy
-
+                print course[0]
                 bestSlot = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
-                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
                                 bestSlot = time
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
-                        courseTimesDict[bestSlot].append(course[0])
-                        courseToTime[course[0]].append(bestSlot)
+                        courseTimesDict[bestSlot].append(str(course[0])+'a')
+                        courseToTime[str(course[0])+'a']= bestSlot
                 
 
                 bestSlot = None
@@ -129,13 +129,13 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
-                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
                                 bestSlot = time
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
-                        courseTimesDict[bestSlot].append(course[0])
-                        courseToTime[course[0]].append(bestSlot)
+                        courseTimesDict[bestSlot].append(str(course[0])+'b')
+                        courseToTime[str(course[0])+'b']= bestSlot
 
 
                 bestSlot = None
@@ -143,13 +143,13 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
-                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
                                 bestSlot = time
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
-                        courseTimesDict[bestSlot].append(course[0])
-                        courseToTime[course[0]].append(bestSlot)
+                        courseTimesDict[bestSlot].append(str(course[0])+'c')
+                        courseToTime[str(course[0])+'c']= bestSlot
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
         courseDict = { course:{
