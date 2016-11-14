@@ -97,6 +97,7 @@ where mil_times looks like:
         a = parse_constraints(constraints_name)
         a[3]=time_dict
         a.append(time_dict_info)
+        make_new_contraints(constraints_name)
         return a
 
 def parse_constraints(constraints_name):
@@ -138,7 +139,16 @@ def make_new_contraints(constraints_name):
         with open('new_'+constraints_name,'w') as new_file:
             old_constraints = constraints_file.read()
             change=False
+            course_change = True
+            first = True
+            og_count = 0
+            count = 0
             for line in old_constraints.split('\n'):
+                if line[:5]== 'Rooms':
+                    print "There were originally", og_count, "time slots"
+                    print "There are now", count,'\n'
+                    course_change = False
+
                 if line[:8]=='Teachers':
                     change=True
                     new_file.write(line+'\n')
@@ -151,11 +161,25 @@ def make_new_contraints(constraints_name):
                     else:
                         course = course_teacher[0]
                         teacher = course_teacher[1]
+                        if teacher == '':
+                            teacher='0'
                         new_file.write(str(course)+"a\t"+teacher+'\n')
                         new_file.write(str(course)+"b\t"+teacher+'\n')
                         new_file.write(str(course)+"c\t"+teacher+'\n')
+                elif course_change and not first:
+                    og_count +=1
+                    course_id,time_day = line.split("\t")
+                    time_day_list = time_day.split()
+                    days = time_day_list[4:]
+                    for day in days:
+                        count += 1
+                        new_file.write(str(course_id)+day+"\t"+time_day+'\n')
+
                 else:
                     new_file.write(line+'\n')
+                    first = False
+    print "Made a new constraints file 'new_"+constraints_name+"'"
+    print "You should use this file to test is valid\n"
 def make_new_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
         with open('new_'+prefs_name,'w') as new_file:
@@ -175,7 +199,10 @@ def make_new_prefs(prefs_name):
                         for pref in prefs:
                             new_pref += pref+'a '+pref+'b '+pref+'c '
                         new_file.write(student+'\t'+new_pref+'\n')
+    print "Made a new student preferences file 'new_"+prefs_name+"'"
+    print "You should use this file to test is valid"
 def parse_prefs(prefs_name):
+    make_new_prefs(prefs_name)
     with open(prefs_name, 'r') as prefs_file:
         num_students = int(prefs_file.readline().split()[-1])
         student_prefs = {}
@@ -186,5 +213,3 @@ def parse_prefs(prefs_name):
             line = [num for num in line if line.count(num) < 2] #not fast
             student_prefs[student_id] = line
         return student_prefs
-make_new_contraints("haverfordConstraints.txt")
-make_new_prefs("haverfordStudentPrefs.txt")
