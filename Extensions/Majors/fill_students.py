@@ -80,6 +80,8 @@ def fillStudents(studentPrefs, courseDict, coursesToMajors, studentsToMajors):
                         if course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
+                                courseDict[choice]['students'].append(student)
+                                print 'aksdjfaosjdf'
                                 '''Need to change time analysis where it says to separate prefs into groups'''
                                 for conflict in conflicts:
                                         prefs[prefs.index(conflict)] = -1

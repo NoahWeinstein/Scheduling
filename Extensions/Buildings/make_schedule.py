@@ -1,5 +1,10 @@
 '''
 This file accepts the command line arguments and actually makes the schedule.
+
+Use this for buildings extension
+Note: Use the complete constraints file with this script
+    but use the one without buildings for the is_valid command
+        ^ have to create it manually by deleting everything new from constraints file
 '''
 
 from random import randint
@@ -41,8 +46,13 @@ for teacher in teachers:
 # all slots start empty
 times = constraints[3]
 
-studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+# room_buildings is a dictionary that maps buildings to the rooms in them
+room_buildings = constraints[4]
 
+# prof_buildings is a dictionary that maps profs to buildings
+prof_buildings = constraints[5]
+
+studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
 
 
 #some restructuring of other functions to make them work with the new conflict matrix might need to happen
@@ -62,11 +72,15 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
                                 	conflict_dict[(cur_pref_list[j],cur_pref_list[i])] += 1
         
         for teacher in teacher_dictionary:
-                conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = float('inf')
-                conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = float('inf')
+                for course_first in teacher_dictionary[teacher]:
+                        for course_second in teacher_dictionary[teacher]:
+                                if course_first != course_second:
+                                        conflict_dict[(course_first, course_second)] = float('inf')
+                #conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = float('inf')
+                #conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = float('inf')
         return conflict_dict
 
-
+'''
 def assign_rooms(class_times_dict, rooms, con_mat):
     class_to_room = {}
     big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
@@ -78,7 +92,64 @@ def assign_rooms(class_times_dict, rooms, con_mat):
             class_to_room[pop_course] = big_rooms[counter]
             counter += 1
     return class_to_room
+'''
 
+def assign_rooms(class_times_dict, room_buildings, con_mat, inv_teachers, prof_buildings):
+    # prof_buildings MAPS TEACHERS TO BUILDINGS
+    # room_buildings is building: 'count': 0, 'rooms': []
+    #   where rooms is list of rooms in descending order of size (use sorted)
+    #   where count starts at 0 and keeps track of where we are in slot
+    #   just may need to use sorted later for this... or given sorted?
+    # inv_teachers maps courses to teachers
+    class_to_room = {}
+
+    courses_removed_count = 0
+    courses_removed_list = [] # remove all of these from the list of courses
+    courses_no_prof_building_list = [] # if prof doesn't have a building
+
+    for slot in class_times_dict:
+        # sort descending based on popularity
+        pop_slot = sorted(class_times_dict[slot], key = lambda x: con_mat[(x,x)], reverse = True)
+        # sort the slot by popularity
+
+        for pop_course in pop_slot:
+            if inv_teachers[pop_course] in prof_buildings:
+                building = prof_buildings[inv_teachers[pop_course]]
+                rooms1 = room_buildings[building]['rooms'] # rooms is key, maps to list of rooms
+                counter = room_buildings[building]['counter']
+                if counter == len(rooms1):   # no rooms left in building for that time slot
+                    courses_removed_count += 1
+                    courses_removed_list.append(pop_course)
+                else:
+                    class_to_room[pop_course] = rooms1[counter] # put course: room in there
+                    room_buildings[building]['counter'] += 1
+            else:
+                courses_no_prof_building_list.append(pop_course)
+
+        '''BELOW IS IF WE PUT IT IN ANOTHER BUILDING'''
+        '''
+        remaining_rooms = []
+        for building in room_buildings:
+            count = room_buildings[building]['counter']
+            rest = room_buildings[building['rooms'][count:]]
+            remaining_rooms += rest
+        (NEED TO SORT REMAINING ROOMS by size)
+        (NEED TO SORT COURSES REMOVED LIST...by popularity)
+        for course in courses_removed_list:
+            class_to_room[course] = remaining_rooms.pop(0)
+        '''
+
+        # at end of slot revert count to 0
+        for building in room_buildings:
+            room_buildings[building]['counter'] = 0
+
+    # no prof building list has all courses right now
+    for course in courses_removed_list:
+        courses.remove(course)
+    for course in courses_no_prof_building_list:
+        courses.remove(course)
+
+    return class_to_room
 
 def make_popularity_list (courses_dictionary, con_mat):
 	#this section is the popularityList from the write-up
@@ -88,15 +159,13 @@ def make_popularity_list (courses_dictionary, con_mat):
 	popularity.sort(key= lambda student: student[1], reverse = True)
 	#print popularity
 	return popularity
-
-
 		
 
 # this function is almost identical with the pseudocode. It is responsible for
 # creating the dictionary that maps a course to its teacher, room, students,
 # and time. It calls several helper functions.
 def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
-                     inv_teachers):  
+                     inv_teachers):
         courseToTime = {course: None for course in courses}
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
@@ -113,16 +182,20 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                 if bestSlot != None:
                         courseTimesDict[bestSlot].append(course[0])
                         courseToTime[course[0]] = bestSlot
-                        
-        roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-        courseDict = { course:{
-        'room': roomDict[course],
-        'roomSize': rooms[roomDict[course]],
-        'popularity': conflicts[course, course],
-        'teacher': inv_teachers[course],
-        'time': courseToTime[course],
-        'students': []
-        } for course in courses if course in roomDict}
+                  
+        roomDict = assign_rooms(courseTimesDict, room_buildings, conflicts, inv_teachers, prof_buildings)
+
+        courseDict = {}
+        for course in courses:
+            if course in roomDict:
+                courseDict[course] = {
+                    'room': roomDict[course],
+                    'roomSize': rooms[roomDict[course]],
+                    'popularity': conflicts[course, course],
+                    'teacher': inv_teachers[course],
+                    'time': courseToTime[course],
+                    'students': []
+                }
 
         fillStudents(studentPrefs, courseDict)
         return courseDict
@@ -142,10 +215,12 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
-courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs, inv_teachers)
+courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
+                                 inv_teachers)
 
 make_output(courseListNew, args.output[0])
 
+print "Done!"
 
 
 

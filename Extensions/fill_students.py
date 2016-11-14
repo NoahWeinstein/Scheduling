@@ -69,6 +69,7 @@ def fillStudents(studentPrefs, courseDict):
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
+			#print course
                         if course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
