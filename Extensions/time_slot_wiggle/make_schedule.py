@@ -5,7 +5,7 @@ This file accepts the command line arguments and actually makes the schedule.
 from random import randint
 import argparse
 
-import parse_inputs
+import wiggle_parse_inputs
 
 from fill_students import *
 from make_output import *
@@ -21,7 +21,7 @@ parser.add_argument('output', type=str, nargs = 1,
 
 args = parser.parse_args()
 
-constraints = parse_inputs.parse_constraints(args.constraints[0])
+constraints = wiggle_parse_inputs.parse_constraints_wiggle(args.constraints[0])
 # rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
 
@@ -41,7 +41,7 @@ for teacher in teachers:
 # all slots start empty
 times = constraints[3]
 
-studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
+studentPrefs = wiggle_parse_inputs.parse_prefs(args.preferences[0])
 
 
 
@@ -62,8 +62,12 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
                                 	conflict_dict[(cur_pref_list[j],cur_pref_list[i])] += 1
         
         for teacher in teacher_dictionary:
-                conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = float('inf')
-                conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = float('inf')
+                for course_first in teacher_dictionary[teacher]:
+                        for course_second in teacher_dictionary[teacher]:
+                                if course_first != course_second:
+                                        conflict_dict[(course_first, course_second)] = float('inf')
+                #conflict_dict[(teacher_dictionary[teacher][0],teacher_dictionary[teacher][1])] = float('inf')
+                #conflict_dict[(teacher_dictionary[teacher][1],teacher_dictionary[teacher][0])] = float('inf')
         return conflict_dict
 
 
@@ -72,7 +76,7 @@ def assign_rooms(class_times_dict, rooms, con_mat):
     big_rooms = sorted(rooms, key = lambda x: rooms[x], reverse = True)
     for slot in class_times_dict:
         #sort descending based on popularity
-        pop_slot = sorted(class_times_dict[slot], key = lambda x: con_mat[(x,x)], reverse = True)
+        pop_slot = sorted(class_times_dict[slot], key = lambda x: con_mat[(int(x[:-1]),int(x[:-1]))], reverse = True)
         counter = 0
         for pop_course in pop_slot:
             class_to_room[pop_course] = big_rooms[counter]
@@ -101,29 +105,74 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
         conflicts = make_conflict_matrix(studentPrefs, teachers, courses)
         popularities = make_popularity_list(courses, conflicts)
         for course in popularities:
+            # We now want to assign each course to 3 time slots
+            # So, I just do the course assignment 3 times
+            # I know this is a stupid way of doing it, and it might slow it down
+            # But it is gloriously easy
+                print course[0]
                 bestSlot = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
-                                tempConflictNum += conflicts[(conflictingCourse, course[0])]
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
                                 bestSlot = time
                                 bestConflictNum = tempConflictNum
                 if bestSlot != None:
-                        courseTimesDict[bestSlot].append(course[0])
-                        courseToTime[course[0]] = bestSlot
+                        courseTimesDict[bestSlot].append(str(course[0])+'a')
+                        courseToTime[str(course[0])+'a']= bestSlot
+                
+
+                bestSlot = None
+                bestConflictNum = float('inf')
+                for time in courseTimesDict:
+                        tempConflictNum = 0
+                        for conflictingCourse in courseTimesDict[time]:
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
+                        if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
+                                bestSlot = time
+                                bestConflictNum = tempConflictNum
+                if bestSlot != None:
+                        courseTimesDict[bestSlot].append(str(course[0])+'b')
+                        courseToTime[str(course[0])+'b']= bestSlot
+
+
+                bestSlot = None
+                bestConflictNum = float('inf')
+                for time in courseTimesDict:
+                        tempConflictNum = 0
+                        for conflictingCourse in courseTimesDict[time]:
+                                tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
+                        if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
+                                bestSlot = time
+                                bestConflictNum = tempConflictNum
+                if bestSlot != None:
+                        courseTimesDict[bestSlot].append(str(course[0])+'c')
+                        courseToTime[str(course[0])+'c']= bestSlot
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-        courseDict = { course:{
-        'room': roomDict[course],
-        'roomSize': rooms[roomDict[course]],
+        abc=['a','b','c']
+        print rooms
+        print "\n\n"
+        print roomDict
+        print "\n\n"
+        print inv_teachers   
+        courseDict = { str(course)+letter:{
+        'room': roomDict[str(course)+letter],
+        'roomSize': rooms[roomDict[str(course)+letter]],
         'popularity': conflicts[course, course],
         'teacher': inv_teachers[course],
-        'time': courseToTime[course],
+        'time': courseToTime[str(course)+letter],
         'students': []
-        } for course in courses if course in roomDict}
-
+        } for course in courses for letter in abc}
+        print courseDict
+        print studentPrefs
+        for student in studentPrefs:
+            new_prefs = []
+            for course in studentPrefs[student]:
+                new_prefs.extend([str(course)+'a',str(course)+'b',str(course)+'c'])
+            studentPrefs[student]=new_prefs
         fillStudents(studentPrefs, courseDict)
         return courseDict
 
@@ -142,10 +191,12 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 
 #make_schedule(class_times,rooms,students,teachers,con_mat,c)
 
-courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs, inv_teachers)
+courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs,
+                                 inv_teachers)
 
 make_output(courseListNew, args.output[0])
 
+print "Done!"
 
 
 

@@ -1,6 +1,6 @@
 # all of this code can be copied later into the real file
 # just doing this to test and make sure it all works on its own
-
+# EDITED SO THAT STUDENTS CAN NO BE PLACED IN MORE THAN 4 COURSES
 
 '''
         takes a course and list of coursees and sees if the course conflicts with the others in the list
@@ -58,20 +58,23 @@ def isNotFull(course, courseDict):
         return courseDict[course]['roomSize'] - len(courseDict[course]['students'])
 
 def fillStudents(studentPrefs, courseDict):
+        num_courses = {s:0 for s in studentPrefs}
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                        if isNotFull(course, courseDict):
+                        if num_courses[student] < 4  and isNotFull(course, courseDict):
                                 if  hasNoConflicts(course, prefs, courseDict):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)
                                         prefs[prefs.index(course)] = -1
+                                        num_courses[student] += 1
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                        if course != -1 and isNotFull(course, courseDict):
+                        if num_courses[student] < 4 and course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
+                                num_courses[student] += 1
                                 '''Need to change time analysis where it says to separate prefs into groups'''
                                 for conflict in conflicts:
                                         prefs[prefs.index(conflict)] = -1

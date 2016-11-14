@@ -13,7 +13,7 @@ def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
                 # make sure currentCourse != course bc that'll have the same time
                 # hacky -1 solution to avoid courses we have already added a
                 # student to
-                if course in courseDict and course != -1 and currentCourse != course and courseDict[currentCourse]['time'] == courseDict[course]['time']:
+                if course != -1 and currentCourse != course and courseDict[currentCourse]['time'] == courseDict[course]['time']:
                         return False
         return True
 
@@ -24,7 +24,7 @@ def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
 def coursesThatConflict(currentCourse, listOfPrefs, courseDict):
         conflicts = []
         for course in listOfPrefs:
-                if course in courseDict and course != -1 and courseDict[currentCourse]['time'] == courseDict[course]['time']:
+                if course != -1 and courseDict[currentCourse]['time'] == courseDict[course]['time']:
                         # then it conflicts with this course, can be itself
                         conflicts.append(course)
         return conflicts
@@ -40,7 +40,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
         # if positive or zero has no potential to overflow
         # if negative, has potential, so looking for course with overflow closest to 0
         leastOverflowValue = float("-infinity")
-        leastOverflowCourse = -1
+        leastOverflowCourse = 0
         noOverflowList = []
         for course in conflicts:
                 overflow = courseDict[course]['roomSize'] - courseDict[course]['popularity']
@@ -48,20 +48,21 @@ def leastPotentialForOverflow(conflicts, courseDict):
                         # if there's a course with no overflow, then choose it (random one)
                         return course
                 else:
-                        if overflow > leastOverflowValue and isNotFull(course, courseDict):
+                        if overflow > leastOverflowValue:
                                 leastOverflowValue = overflow
                                 leastOverflowCourse = course
         return leastOverflowCourse
 
 # isNotFull will be 0 if it's full, so isNotFull is true if it's not full
 def isNotFull(course, courseDict):
+        # I think that the courses get assigned to the same room so this should be fine?
         return courseDict[course]['roomSize'] - len(courseDict[course]['students'])
 
 def fillStudents(studentPrefs, courseDict):
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                    if course in courseDict and isNotFull(course, courseDict):
+                        if isNotFull(course, courseDict):
                                 if  hasNoConflicts(course, prefs, courseDict):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)
@@ -69,14 +70,12 @@ def fillStudents(studentPrefs, courseDict):
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                        if course in courseDict and course != -1 and isNotFull(course, courseDict):
+                        if course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
-                                if choice != -1:
-                                        courseDict[choice]['students'].append(student)
-                                        '''Need to change time analysis where it says to separate prefs into groups'''
-                                        for conflict in conflicts:
-                                                prefs[prefs.index(conflict)] = -1
+                                '''Need to change time analysis where it says to separate prefs into groups'''
+                                for conflict in conflicts:
+                                        prefs[prefs.index(conflict)] = -1
 
 
 

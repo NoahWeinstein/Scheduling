@@ -3,17 +3,25 @@
 
 
 '''
-        takes a course and list of coursees and sees if the course conflicts with the others in the list
+        takes a course and list of courses and sees if the course conflicts with the others in the list
         listOfPrefs given does not include current course
         returns a boolean
 '''
-def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
+def hasNoConflicts(currentCourse, listOfPrefs, courseDict, time_overlaps):
         # check if their time_id is the same
+	#print listOfPrefs
         for course in listOfPrefs:
                 # make sure currentCourse != course bc that'll have the same time
                 # hacky -1 solution to avoid courses we have already added a
                 # student to
-                if course in courseDict and course != -1 and currentCourse != course and courseDict[currentCourse]['time'] == courseDict[course]['time']:
+		#print "course: "
+		#print currentCourse
+		#print course
+		#if course in courseDict:
+			#print courseDict[currentCourse]['time']
+			#if courseDict[course]['time'] in time_overlaps:
+				#print time_overlaps[courseDict[course]['time']]
+                if course in courseDict and course != -1 and currentCourse != course and courseDict[currentCourse]['time'] in time_overlaps[courseDict[course]['time']]:
                         return False
         return True
 
@@ -21,12 +29,14 @@ def hasNoConflicts(currentCourse, listOfPrefs, courseDict):
         takes the current course and the list of prefs
         returns a list of courses that conflict
 '''
-def coursesThatConflict(currentCourse, listOfPrefs, courseDict):
+def coursesThatConflict(currentCourse, listOfPrefs, courseDict, time_overlaps):
         conflicts = []
         for course in listOfPrefs:
-                if course in courseDict and course != -1 and courseDict[currentCourse]['time'] == courseDict[course]['time']:
+                if course in courseDict and course != -1 and courseDict[currentCourse]['time'] in time_overlaps[courseDict[course]['time']]:
                         # then it conflicts with this course, can be itself
                         conflicts.append(course)
+	print currentCourse
+	print conflicts
         return conflicts
 
 '''
@@ -40,7 +50,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
         # if positive or zero has no potential to overflow
         # if negative, has potential, so looking for course with overflow closest to 0
         leastOverflowValue = float("-infinity")
-        leastOverflowCourse = -1
+        leastOverflowCourse = 0
         noOverflowList = []
         for course in conflicts:
                 overflow = courseDict[course]['roomSize'] - courseDict[course]['popularity']
@@ -48,7 +58,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
                         # if there's a course with no overflow, then choose it (random one)
                         return course
                 else:
-                        if overflow > leastOverflowValue and isNotFull(course, courseDict):
+                        if overflow > leastOverflowValue:
                                 leastOverflowValue = overflow
                                 leastOverflowCourse = course
         return leastOverflowCourse
@@ -57,26 +67,27 @@ def leastPotentialForOverflow(conflicts, courseDict):
 def isNotFull(course, courseDict):
         return courseDict[course]['roomSize'] - len(courseDict[course]['students'])
 
-def fillStudents(studentPrefs, courseDict):
+def fillStudents(studentPrefs, courseDict, time_overlaps):
+	#print studentPrefs
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
-                    if course in courseDict and isNotFull(course, courseDict):
-                                if  hasNoConflicts(course, prefs, courseDict):
+			#print course in courseDict
+			if course in courseDict and isNotFull(course, courseDict):
+                                if hasNoConflicts(course, prefs, courseDict, time_overlaps):
                                         # if there's room in the course and it doesn't conflict with any other preferences
                                         courseDict[course]['students'].append(student)
                                         prefs[prefs.index(course)] = -1
         for student in studentPrefs:
                 prefs = studentPrefs[student]
                 for course in prefs:
+			#print course
                         if course in courseDict and course != -1 and isNotFull(course, courseDict):
-                                conflicts = coursesThatConflict(course, prefs, courseDict)
+                                conflicts = coursesThatConflict(course, prefs, courseDict, time_overlaps)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
-                                if choice != -1:
-                                        courseDict[choice]['students'].append(student)
-                                        '''Need to change time analysis where it says to separate prefs into groups'''
-                                        for conflict in conflicts:
-                                                prefs[prefs.index(conflict)] = -1
+                                '''Need to change time analysis where it says to separate prefs into groups'''
+                                for conflict in conflicts:
+                                        prefs[prefs.index(conflict)] = -1
 
 
 

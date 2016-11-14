@@ -145,7 +145,10 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
 courseListNew = courseAssignment(courses, rooms, times, teachers, studentPrefs, inv_teachers)
 
 make_output(courseListNew, args.output[0])
-
+stuprefsval = reduce(lambda x,y: x + len(y['students']),
+                     courseListNew.values(), 0)
+print "Student Preferences Value: ", stuprefsval
+print "Optimal Preferences Value: ", 4 * len(studentPrefs)
 
 
 
