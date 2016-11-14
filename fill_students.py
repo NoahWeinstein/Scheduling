@@ -40,7 +40,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
         # if positive or zero has no potential to overflow
         # if negative, has potential, so looking for course with overflow closest to 0
         leastOverflowValue = float("-infinity")
-        leastOverflowCourse = 0
+        leastOverflowCourse = -1
         noOverflowList = []
         for course in conflicts:
                 overflow = courseDict[course]['roomSize'] - courseDict[course]['popularity']
@@ -48,7 +48,7 @@ def leastPotentialForOverflow(conflicts, courseDict):
                         # if there's a course with no overflow, then choose it (random one)
                         return course
                 else:
-                        if overflow > leastOverflowValue:
+                        if overflow > leastOverflowValue and isNotFull(course, courseDict):
                                 leastOverflowValue = overflow
                                 leastOverflowCourse = course
         return leastOverflowCourse
@@ -72,9 +72,11 @@ def fillStudents(studentPrefs, courseDict):
                         if course in courseDict and course != -1 and isNotFull(course, courseDict):
                                 conflicts = coursesThatConflict(course, prefs, courseDict)
                                 choice = leastPotentialForOverflow(conflicts, courseDict)
-                                '''Need to change time analysis where it says to separate prefs into groups'''
-                                for conflict in conflicts:
-                                        prefs[prefs.index(conflict)] = -1
+                                if choice != -1:
+                                        courseDict[choice]['students'].append(student)
+                                        '''Need to change time analysis where it says to separate prefs into groups'''
+                                        for conflict in conflicts:
+                                                prefs[prefs.index(conflict)] = -1
 
 
 
