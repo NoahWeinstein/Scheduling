@@ -3,6 +3,7 @@ This file contains functions that parse the inputs that are passed in as text
 files.
 
 ADAPTED FOR HAVERFORD DATA
+USE FOR BUILDINGS EXTENSION
 
 '''
 
@@ -39,7 +40,25 @@ def parse_constraints(constraints_name):
                 teacher_to_classes[teacher_id] = []
             teacher_to_classes[teacher_id].append(class_id)
         courses.sort()
-        return (rooms, courses, teacher_to_classes, times)
+
+        num_room_buildings = int(constraints_file.readline().split()[-1]) - 1
+        constraints_file.readline()
+        room_buildings = {}
+        for i in range(0,num_room_buildings):
+            line = constraints_file.readline().split()
+            building_id = line[0]
+            rooms1 = line[1:]
+            room_buildings[building_id] = {'counter': 0, 'rooms': rooms1}
+
+        num_prof_buildings = int(constraints_file.readline().split()[-1])
+        prof_buildings = {}
+        for i in range(0,num_prof_buildings):
+            line = constraints_file.readline().split()
+            prof_id = int(line[0])
+            building = line[1]
+            prof_buildings[prof_id] = building
+
+        return (rooms, courses, teacher_to_classes, times, room_buildings, prof_buildings)
 
 def parse_prefs(prefs_name):
     with open(prefs_name, 'r') as prefs_file:
@@ -52,5 +71,4 @@ def parse_prefs(prefs_name):
             line = [num for num in line if line.count(num) < 2] #not fast
             student_prefs[student_id] = line
         return student_prefs
-
 

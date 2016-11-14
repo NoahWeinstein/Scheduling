@@ -1,11 +1,16 @@
 '''
 This file accepts the command line arguments and actually makes the schedule.
+
+Use this for buildings extension
+Note: Use the complete constraints file with this script
+    but use the one without buildings for the is_valid command
+        ^ have to create it manually by deleting everything new from constraints file
 '''
 
 from random import randint
 import argparse
 
-import hc_parse_inputs
+import parse_inputs
 
 from fill_students import *
 from make_output import *
@@ -21,7 +26,7 @@ parser.add_argument('output', type=str, nargs = 1,
 
 args = parser.parse_args()
 
-constraints = hc_parse_inputs.parse_constraints(args.constraints[0])
+constraints = parse_inputs.parse_constraints(args.constraints[0])
 # rooms is a dictionary that maps room id to capacity
 rooms = constraints[0]
 
@@ -47,7 +52,7 @@ room_buildings = constraints[4]
 # prof_buildings is a dictionary that maps profs to buildings
 prof_buildings = constraints[5]
 
-studentPrefs = hc_parse_inputs.parse_prefs(args.preferences[0])
+studentPrefs = parse_inputs.parse_prefs(args.preferences[0])
 
 
 #some restructuring of other functions to make them work with the new conflict matrix might need to happen
@@ -138,8 +143,6 @@ def assign_rooms(class_times_dict, room_buildings, con_mat, inv_teachers, prof_b
         for building in room_buildings:
             room_buildings[building]['counter'] = 0
 
-    print courses_removed_list
-    print courses_no_prof_building_list
     # no prof building list has all courses right now
     for course in courses_removed_list:
         courses.remove(course)
