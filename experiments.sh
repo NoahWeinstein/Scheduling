@@ -1,5 +1,5 @@
 #!/bin/sh
-max=30
+max=1
 TIMEFORMAT=%R
 
 #touch times.txt
@@ -190,8 +190,25 @@ do
     rm prefs_4.txt
     rm schedule_4.txt
 done
+echo '\n'
 
+echo 'Experiment FINAL has 11 time slots, 12 rooms,  128 classes, and 32000
+students \n'
+echo 'Experiment FINAL' >> values.txt
+#echo 'Experiment 1' >> times.txt
 
+for i in `seq 1 30`
+do
+    ./make_random_input.pl 12 128 11 32000 constraints_1.txt prefs_1.txt
+    time python make_schedule.py constraints_1.txt prefs_1.txt schedule_1.txt
+    ./exp_is_valid.pl constraints_1.txt prefs_1.txt schedule_1.txt >> values.txt
+    echo '\t 128000' >> values.txt
+
+    rm constraints_1.txt
+    rm prefs_1.txt
+    rm schedule_1.txt
+done
+echo '\n'
 
 
 
