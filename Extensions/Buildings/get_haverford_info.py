@@ -51,6 +51,32 @@ def get_student_prefs_enrolled(list_of_dicts):
         student_prefs[student] = [course]
   return student_prefs
 
+def get_room_buildings(list_of_dicts):
+  # put buildings in and map them to dict of count and the rooms in them
+  buildings = {}
+  for dict in list_of_dicts:
+    building = dict["Building 1"]
+    room = dict["Facil ID 1"]
+    campus = dict["College"]
+    if building in buildings and campus == "H":
+      if buildings[building].count(room) == 0:
+        buildings[building].append(room)
+    else:
+      buildings[building] = [room]
+  return buildings
+
+def get_prof_buildings(list_of_dicts):
+  # dict mapping prof to the building they can be in
+  # ONLY GIVING THEM ONE BUILDING RIGHT NOW...but hc has multiple probably
+  prof_buildings = {}
+  for dict in list_of_dicts:
+    prof = dict["Instructor ID"]
+    building = dict["Building 1"]
+    campus = dict["College"]
+    if prof not in prof_buildings and prof != "" and building != "":
+      prof_buildings[prof] = building
+  return prof_buildings
+
 def get_courses(list_of_dicts):
   courses = {}
   for dict in list_of_dicts: 
@@ -160,13 +186,35 @@ def write_teachers_to_file(list_of_dicts, f):
     f.write(courses[course]["Instructor ID"])
     f.write("\n")
 
+def write_buildings_to_file(list_of_dicts, f):
+  room_buildings = get_room_buildings(list_of_dicts)
+  num_buildings = len(room_buildings)
+  prof_buildings = get_prof_buildings(list_of_dicts)
+  num_profs = len(prof_buildings)
+  f.write("Buildings\t" + str(num_buildings) + "\n")
+  for building in room_buildings:
+    f.write(building + "\t")
+    for room in room_buildings[building]:
+      f.write(room + "\t")
+    f.write("\n")
+  f.write("Teachers\t" + str(num_profs) + "\n")
+  for prof in prof_buildings:
+    f.write(prof + "\t")
+    f.write(prof_buildings[prof])
+    f.write("\n")
+
 def write_constraints_to_file(list_of_dicts, filename):
   f = open(filename, 'w')
   write_class_times_to_file(list_of_dicts, f)
   write_rooms_to_file(list_of_dicts, f)
   write_num_classes_to_file(list_of_dicts, f)
   write_teachers_to_file(list_of_dicts, f)
+  write_buildings_to_file(list_of_dicts, f)
   f.close()
+  '''
+  NOTE: When using is_valid, need to revert it to old format (without writing buildings)
+    Can do this manually by deleting the bottom half of the file and saving it as another txt file
+  '''
 
 if len(sys.argv) != 4:
   print "Usage: " + sys.argv[0] + " <enrollment.csv> <student_prefs.txt> <constraints.txt>"
