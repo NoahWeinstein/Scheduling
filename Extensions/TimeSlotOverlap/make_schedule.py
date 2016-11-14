@@ -118,7 +118,9 @@ def make_timeslot_list (timeslot_overlaps):
 	for time in timeslot_overlaps:
 		return_list.append(time)
 	
-	return_list.sort(key= lambda time: len(timeslot_overlaps[time]), reverse = True)
+	return_list.sort(key= lambda time: len(timeslot_overlaps[time]), reverse = False) #true is the incorrect way
+	print "hey time slot"
+	print len(timeslot_overlaps[return_list[0]])
 	
 	return return_list
 
@@ -158,7 +160,6 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
                         courseToTime[course[0]] = bestSlot
                         
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-	print courses
         courseDict = { course:{
         'room': roomDict[course],
         'roomSize': rooms[roomDict[course]],
