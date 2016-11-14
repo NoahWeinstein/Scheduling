@@ -162,6 +162,37 @@ do
 done
 echo '\n'
 
+echo 'Haverford Sized with 28 time slots, 50 rooms, 260 classes, 1100 students'
+echo 'Haverford Sized School' >> values.txt
+for i in `seq 1 $max`
+do
+    ./make_random_input.pl 50 300 28 1100 constraints_4.txt prefs_4.txt
+    time python make_schedule.py constraints_4.txt prefs_4.txt schedule_4.txt
+    ./exp_is_valid.pl constraints_4.txt prefs_4.txt schedule_4.txt >> values.txt
+    echo '\t 4400' >> values.txt
+
+    rm constraints_4.txt
+    rm prefs_4.txt
+    rm schedule_4.txt
+done
+echo '\n'
+
+echo 'Twice Haverford'
+echo 'Twice Haverford' >> values.txt
+for i in `seq 1 $max`
+do
+    ./make_random_input.pl 100 520 56 2200 constraints_4.txt prefs_4.txt
+    time python make_schedule.py constraints_4.txt prefs_4.txt schedule_4.txt
+    ./exp_is_valid.pl constraints_4.txt prefs_4.txt schedule_4.txt >> values.txt
+    echo '\t 8800' >> values.txt
+
+    rm constraints_4.txt
+    rm prefs_4.txt
+    rm schedule_4.txt
+done
+
+
+
 
 
 
