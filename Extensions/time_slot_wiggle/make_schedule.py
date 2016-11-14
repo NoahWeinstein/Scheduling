@@ -52,7 +52,6 @@ def make_conflict_matrix(student_dictionary, teacher_dictionary, courses_diction
 	for course_first in courses_dictionary:
                 for course_second in courses_dictionary:
                         conflict_dict[(course_first,course_second)] = 0
-                        
 	for student in student_dictionary:
                 cur_pref_list = student_dictionary[student]
                 for i in range (0, len(cur_pref_list)):
@@ -90,7 +89,6 @@ def make_popularity_list (courses_dictionary, con_mat):
 	for course in courses_dictionary:       #this structure is modeled after the con_mat lake built
 		popularity.append((course,con_mat[(course,course)]))
 	popularity.sort(key= lambda student: student[1], reverse = True)
-	#print popularity
 	return popularity
 
 
@@ -109,55 +107,65 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
             # So, I just do the course assignment 3 times
             # I know this is a stupid way of doing it, and it might slow it down
             # But it is gloriously easy
-                print course[0]
-                bestSlot = None
+                bestSlot1 = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
+                                if int(conflictingCourse[:-1]) == course[0]:
+                                    tempConflictNum = float('inf')
                                 tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
-                                bestSlot = time
+                                bestSlot1 = time
                                 bestConflictNum = tempConflictNum
-                if bestSlot != None:
-                        courseTimesDict[bestSlot].append(str(course[0])+'a')
-                        courseToTime[str(course[0])+'a']= bestSlot
-                
-
-                bestSlot = None
+                if bestSlot1 != None:
+                        courseTimesDict[bestSlot1].append(str(course[0])+'a')
+                        courseToTime[str(course[0])+'a']= bestSlot1
+                bestSlot2 = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
+                                if int(conflictingCourse[:-1]) == course[0]:
+                                    tempConflictNum = float('inf')
                                 tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
-                                bestSlot = time
+                                bestSlot2 = time
                                 bestConflictNum = tempConflictNum
-                if bestSlot != None:
-                        courseTimesDict[bestSlot].append(str(course[0])+'b')
-                        courseToTime[str(course[0])+'b']= bestSlot
-
-
-                bestSlot = None
+                if bestSlot2 != None:
+                        courseTimesDict[bestSlot2].append(str(course[0])+'b')
+                        courseToTime[str(course[0])+'b']= bestSlot2
+                bestSlot3 = None
                 bestConflictNum = float('inf')
                 for time in courseTimesDict:
                         tempConflictNum = 0
                         for conflictingCourse in courseTimesDict[time]:
+                                if int(conflictingCourse[:-1]) == course[0]:
+                                    tempConflictNum = float('inf')
+
                                 tempConflictNum += conflicts[(int(conflictingCourse[:-1]), course[0])]
                         if (tempConflictNum < bestConflictNum and len(courseTimesDict[time]) < len(rooms)):
-                                bestSlot = time
+                                bestSlot3 = time
                                 bestConflictNum = tempConflictNum
-                if bestSlot != None:
-                        courseTimesDict[bestSlot].append(str(course[0])+'c')
-                        courseToTime[str(course[0])+'c']= bestSlot
-                        
+                if bestSlot3 != None:
+                        courseTimesDict[bestSlot3].append(str(course[0])+'c')
+                        courseToTime[str(course[0])+'c']= bestSlot3
+                if bestSlot1 == None or bestSlot2 == None or bestSlot3 == None:
+                        if bestSlot1 != None:
+                            courseTimesDict[bestSlot1].pop()
+                            courseToTime.pop(str(course[0])+'a',None)
+                        if bestSlot2 != None:
+                            courseTimesDict[bestSlot2].pop()
+                            courseToTime.pop(str(course[0])+'b',None)
+                        if bestSlot3 != None:
+                            courseTimesDict[bestSlot3].pop()
+                            courseToTime.pop(str(course[0])+'c',None)
+                else:
+                    #print "couldn't do",course
+                    pass
+                    
         roomDict = assign_rooms(courseTimesDict, rooms, conflicts)
-        abc=['a','b','c']
-        print rooms
-        print "\n\n"
-        print roomDict
-        print "\n\n"
-        print inv_teachers   
+        abc=['a','b','c'] 
         courseDict = { str(course)+letter:{
         'room': roomDict[str(course)+letter],
         'roomSize': rooms[roomDict[str(course)+letter]],
@@ -165,15 +173,14 @@ def courseAssignment(courses, rooms, courseTimesDict, teachers, studentPrefs,
         'teacher': inv_teachers[course],
         'time': courseToTime[str(course)+letter],
         'students': []
-        } for course in courses for letter in abc}
-        print courseDict
-        print studentPrefs
+	        } for course in courses for letter in abc if str(course)+letter in roomDict}
         for student in studentPrefs:
             new_prefs = []
             for course in studentPrefs[student]:
                 new_prefs.extend([str(course)+'a',str(course)+'b',str(course)+'c'])
             studentPrefs[student]=new_prefs
         fillStudents(studentPrefs, courseDict)
+
         return courseDict
 
 #c = 100
